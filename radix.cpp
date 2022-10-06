@@ -6,9 +6,10 @@
 
 using namespace std;
 
-__int128 cmpcnt = 0;
+__int128_t cmpcnt = 0;
 
-void printint128(__int128 x) {
+
+void printint128(__int128_t x) {
     if (x < 0) {
         putchar('-');
         x = -x;
@@ -17,20 +18,7 @@ void printint128(__int128 x) {
     putchar(x % 10 + '0');
 }
 
-string int128tostr(__int128 x){
-    string result = "";
-    if (x < 0) {
-        result = "-"+result;
-    }
-    if (x > 9){
-        int s = x % 10;
-        result = result+to_string(s);
-        printint128(x / 10);
-    }
-    return result;
-}
-
-__int128_t atoint128_t(std::string const & in)
+__int128_t strtoint128(std::string const & in)
 {
     __int128_t res = 0;
     size_t i = 0;
@@ -52,7 +40,6 @@ __int128_t atoint128_t(std::string const & in)
         res *= 10;
         res += c - '0';
     }
-
     if (sign){
         res *= -1;
     }
@@ -60,124 +47,190 @@ __int128_t atoint128_t(std::string const & in)
 }
 
 
-
-// A utility function to get maximum value in arr[]
-__int128 getMax(vector<__int128> &arr, int n)
-{
-	__int128 mx = arr[0];
-	for (int i = 1; i < n; i++)
-		if (arr[i] > mx)
-			mx = arr[i];
-	return mx;
+string int128tostr(__int128_t x){
+    string result = "";
+    if (x < 0) {
+        result = "-"+result;
+    }
+    if (x > 9){
+        int s = x % 10;
+        result = result+to_string(s);
+        printint128(x / 10);
+    }
+    return result;
 }
+
+void printVector(vector<__int128_t>& arr){
+    for (int i = 0; i < arr.size(); i++){
+        printint128(arr[i]);
+        cout<<"\n";
+    }
+}
+
+vector<__int128_t> initVector(string filePath){
+    ifstream readFile;
+
+    vector<__int128_t> vec;
+    __int128_t num;
+
+    readFile.open(filePath);
+    if(readFile.is_open()){
+        while (!readFile.eof()) {
+            string str;
+            getline(readFile, str);
+            num = strtoint128(str);
+            vec.push_back(num);
+        }
+        readFile.close();
+    }
+    vec.pop_back(); //remove zero value due to EOF
+    return vec;
+}
+
 
 // A function to do counting sort of arr[] according to
 // the digit represented by exp.
-void countSort(vector<__int128> &arr, int n, __int128 exp)
+void countSort(vector<__int128_t> &arr, __int128_t exp ,int r)
 {
-	vector<__int128> output(n); // output array
-	int i, count[10] = { 0 };
+    int i, count[r] = { 0 };
+	vector<__int128_t> output(arr.size()); // output array
 
 	// Store count of occurrences in count[]
-	for (i = 0; i < n; i++)
-		count[(arr[i] / exp) % 10]++;
+	for (i = 0; i < arr.size(); i++)
+		count[(arr[i] / exp) % r]++;
 
 	// Change count[i] so that count[i] now contains actual
 	// position of this digit in output[]
-	for (i = 1; i < 10; i++)
+	for (i = 1; i < r; i++)
 		count[i] += count[i - 1];
 
 	// Build the output array
-	for (i = n - 1; i >= 0; i--) {
-		output[count[(arr[i] / exp) % 10] - 1] = arr[i];
-		count[(arr[i] / exp) % 10]--;
+	for (i = arr.size() - 1; i >= 0; i--) {
+		output[count[(arr[i] / exp) % r] - 1] = arr[i];
+		count[(arr[i] / exp) % r]--;
 	}
 
 	// Copy the output array to arr[], so that arr[] now
 	// contains sorted numbers according to current digit
-	for (i = 0; i < n; i++)
+	for (i = 0; i < output.size(); i++)
 		arr[i] = output[i];
 }
 
 // The main function to that sorts arr[] of size n using
 // Radix Sort
-void radixsort(vector<__int128> &arr, int n)
+void radixsort(vector<__int128_t> &arr, int r = 10)
 {
-	// Find the maximum number to know number of digits
-	__int128 m = getMax(arr, n);
+    __int128_t key = 1 << r;
+	__int128_t max =arr[0];
+
+	for (int i = 1; i < arr.size(); i++)
+		if (arr[i] > max)
+			max = arr[i];
 
 	// Do counting sort for every digit. Note that instead
 	// of passing digit number, exp is passed. exp is 10^i
 	// where i is current digit number
-	for (__int128 exp = 1; m / exp > 0; exp *= 10)//exp =r
-		countSort(arr, n, exp);
+	for (__int128_t exp = 1; max / exp > 0; exp <<= r)//exp =r???
+		countSort(arr, exp, key);
 }
-/*
-// A utility function to print an array
-void print(vector<__int128> &arr, int n)
-{
-	for (int i = 0; i < n; i++)
-		cout << arr[i] << " ";
-}
-*/
 
-// Driver Code
+void Rvalue(vector<__int128_t>& arr, vector<int>& r){
+    clock_t s,e;
+
+    for(int i=0;i<r.size();i++){
+        s = clock();
+        radixsort(arr,r[i]);
+        e = clock();
+        cout<<"r = "<<r[i]<<", runtime : "<<double(e-s)<<" microsecond"<<"\n";
+    }
+}
+
+
 int main()
 {
     clock_t start,end;
-    vector<__int128> vec;
-    __int128 num;
-    
-    ifstream readFile;
 
-    readFile.open("Q3_4");
-    ofstream fout("test.out");
-    if(readFile.is_open()){
-        while (!readFile.eof()) {
-            string str;
-            getline(readFile, str);
-            num = atoint128_t(str);
-            vec.push_back(num);
-        }
-        readFile.close();
-    }
-    __int128 lastnum = vec.back();
-    vec.pop_back();
-    int n = vec.size();
+    vector<__int128_t> q1 = initVector("Q3_1");
+    vector<__int128_t> q2 = initVector("Q3_2");
+    vector<__int128_t> q3 = initVector("Q3_3");
+    vector<__int128_t> q4 = initVector("Q3_4");
+    vector<__int128_t> q5 = initVector("Q3_5");
 
 	// sorting
     start = clock();
-    radixsort(vec, n);
+    radixsort(q1);
     end = clock();
-	//print(vec, n);
-
-    for (int i = 1; i < n; i++){
-        printint128(vec[i]);
-        cout<<"\n";
-    }
-    cout<<"\n";
-
-    cout<<"runtime : "<<double(end-start)<<" millisecond"<<"\n";
-    cout<<"number of comparisons : ";
+    cout<<"Q3_1's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_1's number of comparisons : ";
     printint128(cmpcnt);
     cout<<"\n";
-    printint128(lastnum);
-    cout<<n<<endl;
-    fout.close();
+    cmpcnt = 0;
 
-	return 0;
+    start = clock();
+    radixsort(q2);
+    end = clock();
+    cout<<"Q3_2's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_2's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+    cmpcnt = 0;
+
+    start = clock();
+    //radixsort(q3);
+    end = clock();
+    cout<<"Q3_3's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_3's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+    cmpcnt = 0;
+
+    start = clock();
+    //radixsort(q4);
+    end = clock();
+    cout<<"Q3_4's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_4's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+    cmpcnt = 0;
+
+    start = clock();
+    //radixsort(q5);
+    end = clock();
+    cout<<"Q3_5's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_5's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+
+    //########### R value ############
+    vector<int> rvalues{1,2,3,4,5,7,10,12,14,16};
+    cout<<"Q3_1's runtimes according6 to r value "<<endl;
+    Rvalue(q1,rvalues);
+    cout<<"Q3_2's runtimes according to r value "<<endl;
+    Rvalue(q2,rvalues);
+    //cout<<"Q3_3's runtimes according to r value "<<endl;
+    //Rvalue(q3,rvalues);
+    //cout<<"Q3_4's runtimes according to r value "<<endl;
+    //Rvalue(q4,rvalues);
+    //cout<<"Q3_5's runtimes according to r value "<<endl;
+    //Rvalue(q5,rvalues);
 
 
-    /*
-    for (int i = 0; i < n; i++){
-        string sint = int128tostr(vec[i]);
-        char *ch = (char *)sint.c_str();
-        for (int j=0; j < strlen(ch);j++){
-            cout<<ch[j];
-        }
-        cout<<endl;
-    }
-    fout.close();
-    */
+    //print sorted vector
+    //printVector(q4);
+
 	return 0;
 }
+
+
+
+/*
+for (int i = 0; i < n; i++){
+    string sint = int128tostr(vec[i]);
+    char *ch = (char *)sint.c_str();
+    for (int j=0; j < strlen(ch);j++){
+        cout<<ch[j];
+    }
+    cout<<endl;
+}
+fout.close();
+*/
