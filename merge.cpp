@@ -5,11 +5,11 @@
 #include <time.h>
 
 using namespace std;
-__int128 cmpcnt = 0;
 
-vector<__int128> sorted;
+vector<__int128_t> sorted;
+__int128_t cmpcnt = 0;
 
-void printint128(__int128 x) {
+void printint128(__int128_t x) {
     if (x < 0) {
         putchar('-');
         x = -x;
@@ -18,20 +18,7 @@ void printint128(__int128 x) {
     putchar(x % 10 + '0');
 }
 
-string int128tostr(__int128 x){
-    string result = "";
-    if (x < 0) {
-        result = "-"+result;
-    }
-    if (x > 9){
-        int s = x % 10;
-        result = result+to_string(s);
-        printint128(x / 10);
-    }
-    return result;
-}
-
-__int128_t atoint128_t(std::string const & in)
+__int128_t strtoint128(std::string const & in)
 {
     __int128_t res = 0;
     size_t i = 0;
@@ -53,7 +40,6 @@ __int128_t atoint128_t(std::string const & in)
         res *= 10;
         res += c - '0';
     }
-
     if (sign){
         res *= -1;
     }
@@ -61,7 +47,48 @@ __int128_t atoint128_t(std::string const & in)
 }
 
 
-void merge(vector<__int128>& divarr,int start,int mid,int end){
+string int128tostr(__int128_t x){
+    string result = "";
+    if (x < 0) {
+        result = "-"+result;
+    }
+    if (x > 9){
+        int s = x % 10;
+        result = result+to_string(s);
+        printint128(x / 10);
+    }
+    return result;
+}
+
+void printVector(vector<__int128_t>& arr){
+    for (int i = 0; i < arr.size(); i++){
+        printint128(arr[i]);
+        cout<<"\n";
+    }
+}
+
+vector<__int128_t> initVector(string filePath){
+    ifstream readFile;
+
+    vector<__int128_t> vec;
+    __int128_t num;
+
+    readFile.open(filePath);
+    if(readFile.is_open()){
+        while (!readFile.eof()) {
+            string str;
+            getline(readFile, str);
+            num = strtoint128(str);
+            vec.push_back(num);
+        }
+        readFile.close();
+    }
+    vec.pop_back(); //remove zero value due to EOF
+    return vec;
+}
+
+
+void merge(vector<__int128_t>& divarr,int start,int mid,int end){
 	int i = start;
 	int j = mid + 1;
 	int k = start;
@@ -104,9 +131,9 @@ void merge(vector<__int128>& divarr,int start,int mid,int end){
 	}
 }
 
-void mergesort(vector<__int128>& arr, int start, int end)
+void mergesort(vector<__int128_t>& arr, int start, int end)
 {
-	if (sorted.size() == 0) sorted = vector<__int128>(arr.size());
+	if (sorted.size() == 0) sorted = vector<__int128_t>(arr.size());
 	if (start < end){
         // calc mid position and divide array.
 		int mid = (start + end) / 2;
@@ -119,47 +146,63 @@ void mergesort(vector<__int128>& arr, int start, int end)
 
 
 
-
 int main()
 {
     clock_t start,end;
-    vector<__int128> vec;
-    __int128 num;
-    
-    ifstream readFile;
 
-    readFile.open("Q3_4");
-    ofstream fout("test.out");
-    if(readFile.is_open()){
-        while (!readFile.eof()) {
-            string str;
-            getline(readFile, str);
-            num = atoint128_t(str);
-            vec.push_back(num);
-        }
-        readFile.close();
-    }
-    int n = vec.size()-1;
+    vector<__int128_t> q1 = initVector("Q3_1");
+    vector<__int128_t> q2 = initVector("Q3_2");
+    vector<__int128_t> q3 = initVector("Q3_3");
+    vector<__int128_t> q4 = initVector("Q3_4");
+    vector<__int128_t> q5 = initVector("Q3_5");
 
 	// sorting
     start = clock();
-    mergesort(vec, 0,n-1);
+    mergesort(q1,0,q1.size()-1);
     end = clock();
-	//print(vec, n);
-
-
-
-    for (int i = 1; i < n; i++){
-        printint128(vec[i]);
-        cout<<" ";
-    }
-    cout<<"\n";
-
-    cout<<"runtime : "<<double(end-start)<<" millisecond"<<"\n";
-    cout<<"number of comparisons : ";
+    cout<<"Q3_1's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_1's number of comparisons : ";
     printint128(cmpcnt);
     cout<<"\n";
-    fout.close();
+    cmpcnt = 0;
+
+    start = clock();
+    mergesort(q2,0,q2.size()-1);
+    end = clock();
+    cout<<"Q3_2's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_2's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+    cmpcnt = 0;
+
+    start = clock();
+    mergesort(q3,0,q3.size()-1);
+    end = clock();
+    cout<<"Q3_3's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_3's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+    cmpcnt = 0;
+
+    start = clock();
+    mergesort(q4,0,q4.size()-1);
+    end = clock();
+    cout<<"Q3_4's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_4's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+    cmpcnt = 0;
+
+    start = clock();
+    mergesort(q5,0,q5.size()-1);
+    end = clock();
+    cout<<"Q3_5's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+    cout<<"Q3_5's number of comparisons : ";
+    printint128(cmpcnt);
+    cout<<"\n";
+
+    //print sorted vector
+    //printVector(q4);
 
 	return 0;
 }
