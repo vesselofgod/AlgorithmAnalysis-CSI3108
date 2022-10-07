@@ -8,9 +8,7 @@
 
 using namespace std;
 
-
-
-void printint128(__int128 x) {
+void printint128(__int128_t x) {
     if (x < 0) {
         putchar('-');
         x = -x;
@@ -19,20 +17,7 @@ void printint128(__int128 x) {
     putchar(x % 10 + '0');
 }
 
-string int128tostr(__int128 x){
-    string result = "";
-    if (x < 0) {
-        result = "-"+result;
-    }
-    if (x > 9){
-        int s = x % 10;
-        result = result+to_string(s);
-        printint128(x / 10);
-    }
-    return result;
-}
-
-__int128_t atoint128_t(std::string const & in)
+__int128_t strtoint128(std::string const & in)
 {
     __int128_t res = 0;
     size_t i = 0;
@@ -60,12 +45,54 @@ __int128_t atoint128_t(std::string const & in)
     return res;
 }
 
-  
-void countSort(vector<__int128>& arr)
+
+string int128tostr(__int128_t x){
+    string result = "";
+    if (x < 0) {
+        result = "-"+result;
+    }
+    if (x > 9){
+        int s = x % 10;
+        result = result+to_string(s);
+        printint128(x / 10);
+    }
+    return result;
+}
+
+void printVector(vector<__int128_t>& arr){
+    for (int i = 0; i < arr.size(); i++){
+        printint128(arr[i]);
+        cout<<"\n";
+    }
+}
+
+vector<__int128_t> initVector(string filePath){
+    ifstream readFile;
+
+    vector<__int128_t> vec;
+    __int128_t num;
+
+    readFile.open(filePath);
+    if(readFile.is_open()){
+        while (!readFile.eof()) {
+            string str;
+            getline(readFile, str);
+            num = strtoint128(str);
+            vec.push_back(num);
+        }
+        readFile.close();
+    }
+    vec.pop_back();
+    return vec;
+}
+
+
+
+void countSort(vector<__int128_t>& arr)
 {
-    __int128 max = *max_element(arr.begin(), arr.end());
-    __int128 min = *min_element(arr.begin(), arr.end());
-    __int128 range = max - min + 1;
+    __int128_t max = *max_element(arr.begin(), arr.end());
+    __int128_t min = *min_element(arr.begin(), arr.end());
+    __int128_t range = max - min + 1;
   
     vector<int> count(range), output(arr.size());
     for (int i = 0; i < arr.size(); i++)
@@ -87,40 +114,46 @@ void countSort(vector<__int128>& arr)
 int main()
 {
     clock_t start,end;
-    vector<__int128> vec;
-    __int128 num;
-    
-    ifstream readFile;
 
-    readFile.open("Q3_1");
-    ofstream fout("test.out");
-    if(readFile.is_open()){
-        while (!readFile.eof()) {
-            string str;
-            getline(readFile, str);
-            num = atoint128_t(str);
-            vec.push_back(num);
-        }
-        readFile.close();
-    }
-    int n = vec.size();
+    vector<__int128_t> q1 = initVector("Q3_1");
+    vector<__int128_t> q2 = initVector("Q3_2");
+    vector<__int128_t> q3 = initVector("Q3_3");
+    vector<__int128_t> q4 = initVector("Q3_4");
+    vector<__int128_t> q5 = initVector("Q3_5");
 
 	// sorting
     start = clock();
-    countSort(vec);
+    countSort(q1);
     end = clock();
-	//print(vec, n);
+    cout<<"Q3_1's runtime : "<<double(end-start)<<" microsecond"<<"\n";
 
+    start = clock();
+    countSort(q2);
+    end = clock();
+    cout<<"Q3_2's runtime : "<<double(end-start)<<" microsecond"<<"\n";
 
+    //############## ERROR OCCUR. ##############
+    //terminate called after throwing an instance of 'std::bad_alloc'
+    //what():  std::bad_alloc
+    //Aborted (core dumped)
 
-    for (int i = 1; i < n; i++){
-        printint128(vec[i]);
-        cout<<" ";
-    }
-    cout<<"\n";
+    start = clock();
+    countSort(q3);
+    end = clock();
+    cout<<"Q3_3's runtime : "<<double(end-start)<<" microsecond"<<"\n";
 
-    cout<<"runtime : "<<double(end-start)<<" millisecond"<<"\n";
-    fout.close();
+    start = clock();
+    countSort(q4);
+    end = clock();
+    cout<<"Q3_4's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+
+    start = clock();
+    countSort(q5);
+    end = clock();
+    cout<<"Q3_5's runtime : "<<double(end-start)<<" microsecond"<<"\n";
+
+    //print sorted vector
+    //printVector(q1);
 
 	return 0;
 }
