@@ -92,27 +92,26 @@ vector<__int128_t> initVector(string filePath){
 // the digit represented by exp.
 void countSort(vector<__int128_t> &arr, __int128_t exp ,int r)
 {
-    int i, count[r] = { 0 };
 	vector<__int128_t> output(arr.size()); // output array
-
+    vector<int> count(r, 0);
 	// Store count of occurrences in count[]
-	for (i = 0; i < arr.size(); i++)
+	for (int i = 0; i < arr.size(); i++)
 		count[(arr[i] / exp) % r]++;
 
 	// Change count[i] so that count[i] now contains actual
 	// position of this digit in output[]
-	for (i = 1; i < r; i++)
+	for (int i = 1; i < r; i++)
 		count[i] += count[i - 1];
 
 	// Build the output array
-	for (i = arr.size() - 1; i >= 0; i--) {
+	for (int i = arr.size() - 1; i >= 0; i--) {
 		output[count[(arr[i] / exp) % r] - 1] = arr[i];
 		count[(arr[i] / exp) % r]--;
 	}
 
 	// Copy the output array to arr[], so that arr[] now
 	// contains sorted numbers according to current digit
-	for (i = 0; i < output.size(); i++)
+	for (int i = 0; i < output.size(); i++)
 		arr[i] = output[i];
 }
 
@@ -176,16 +175,17 @@ int main()
     cmpcnt = 0;
 
     start = clock();
-    //radixsort(q3);
+    radixsort(q3);
     end = clock();
     cout<<"Q3_3's runtime : "<<double(end-start)<<" microsecond"<<"\n";
     cout<<"Q3_3's number of comparisons : ";
     printint128(cmpcnt);
     cout<<"\n";
     cmpcnt = 0;
+    
 
     start = clock();
-    //radixsort(q4);
+    radixsort(q4);
     end = clock();
     cout<<"Q3_4's runtime : "<<double(end-start)<<" microsecond"<<"\n";
     cout<<"Q3_4's number of comparisons : ";
@@ -194,7 +194,7 @@ int main()
     cmpcnt = 0;
 
     start = clock();
-    //radixsort(q5);
+    radixsort(q5);
     end = clock();
     cout<<"Q3_5's runtime : "<<double(end-start)<<" microsecond"<<"\n";
     cout<<"Q3_5's number of comparisons : ";
@@ -202,21 +202,21 @@ int main()
     cout<<"\n";
 
     //########### R value ############
-    vector<int> rvalues{1,2,3,4,5,7,10,12,14,16};
+    vector<int> rvalues{1,3,5,10,15,18,20,22,25,27};
     cout<<"Q3_1's runtimes according6 to r value "<<endl;
     Rvalue(q1,rvalues);
     cout<<"Q3_2's runtimes according to r value "<<endl;
     Rvalue(q2,rvalues);
-    //cout<<"Q3_3's runtimes according to r value "<<endl;
-    //Rvalue(q3,rvalues);
-    //cout<<"Q3_4's runtimes according to r value "<<endl;
-    //Rvalue(q4,rvalues);
-    //cout<<"Q3_5's runtimes according to r value "<<endl;
-    //Rvalue(q5,rvalues);
-
-
+    cout<<"Q3_3's runtimes according to r value "<<endl;
+    Rvalue(q3,rvalues);
+    cout<<"Q3_4's runtimes according to r value "<<endl;
+    Rvalue(q4,rvalues);
+    cout<<"Q3_5's runtimes according to r value "<<endl;
+    Rvalue(q5,rvalues);
+    
     //print sorted vector
-    //printVector(q4);
+    //printVector(q5);
+
 
 	return 0;
 }
