@@ -18,32 +18,30 @@ void printint128(__int128_t x) {
     putchar(x % 10 + '0');
 }
 
-__int128_t strtoint128(std::string const & in)
+__int128_t strtoint128(string & sInt)
 {
-    __int128_t res = 0;
     size_t i = 0;
-    bool sign = false;
+    __int128_t result = 0;
+    bool flag = false;
 
-    if (in[i] == '-'){
-        ++i;
-        sign = true;
-    }
-
-    if (in[i] == '+'){
+    if (sInt[i] == '-'){
+        flag = true;
         ++i;
     }
 
-    for (; i < in.size(); ++i){
-        const char c = in[i];
-        if (not std::isdigit(c)) 
-            throw std::runtime_error(std::string("Non-numeric character: ") + c);
-        res *= 10;
-        res += c - '0';
+    if (sInt[i] == '+'){
+        ++i;
     }
-    if (sign){
-        res *= -1;
+
+    for (; i < sInt.size(); ++i){
+        const char c = sInt[i];
+        result *= 10;
+        result += c - '0';
     }
-    return res;
+    if (flag){
+        result *= -1;
+    }
+    return result;
 }
 
 
@@ -88,59 +86,51 @@ vector<__int128_t> initVector(string filePath){
 }
 
 
-void merge(vector<__int128_t>& divarr,int start,int mid,int end){
-	int i = start;
-	int j = mid + 1;
-	int k = start;
-	//분할 정렬된 리스트 합병
-	while (i <= mid && j <= end){
-		if (divarr[i] <= divarr[j]){
-			sorted[k] = divarr[i];
-			i++;
-		}
-		else{
-			sorted[k] = divarr[j];
-			j++;
-		}
-		k++;
-        cmpcnt++;
-	}
-
-    int entry;
+void merge(vector<__int128_t>& divarr,int left,int mid,int right){
+	int a = left;
+	int b = mid + 1;
+	int cur = left;
+    int idx;
     int target;
 
-    if (i > mid)
-        entry=j;
-    else
-        entry=i;
-
-    if(i>mid)
-        target=end;
-    else
-        target=mid;
-
-	//남아 있는 값들 복사 
-	for (int t = entry; t <= target; ++t){
-		sorted[k] = divarr[t];
-		k++;
+	while (a <= mid && b <= right){
+		if (divarr[a] <= divarr[b]){
+			sorted[cur] = divarr[a];
+			++a;
+		}
+		else{
+			sorted[cur] = divarr[b];
+			++b;
+		}
+		++cur;
+        ++cmpcnt;
 	}
 
-	//정렬된 임시 리스트를  원래 리스트에 복사 
-	for (int t = start; t <= end; ++t){
-		divarr[t] = sorted[t];
+    if (a > mid) idx=b;
+    else idx=a;
+
+    if(a>mid) target=right;
+    else target=mid;
+
+	for (int t = idx; t <= target; ++t){
+		sorted[cur] = divarr[t];
+		cur++;
 	}
+
+	for (int t = left; t <= right; ++t) divarr[t] = sorted[t];
 }
 
-void mergesort(vector<__int128_t>& arr, int start, int end)
+//divide and combine vector list to sorting.
+void mergesort(vector<__int128_t>& arr, int left, int right)
 {
 	if (sorted.size() == 0) sorted = vector<__int128_t>(arr.size());
-	if (start < end){
+	if (left < right){
         // calc mid position and divide array.
-		int mid = (start + end) / 2;
-		mergesort(arr, start, mid);  
-		mergesort(arr, mid + 1, end);
+		int mid = (left + right) / 2;
+		mergesort(arr, left, mid);  
+		mergesort(arr, mid + 1, right);
         // combine two sorted subarrays
-		merge(arr,start, mid,end);
+		merge(arr,left, mid,right);
 	}
 }
 

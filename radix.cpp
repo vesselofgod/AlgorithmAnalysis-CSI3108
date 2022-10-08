@@ -18,32 +18,30 @@ void printint128(__int128_t x) {
     putchar(x % 10 + '0');
 }
 
-__int128_t strtoint128(std::string const & in)
+__int128_t strtoint128(string & sInt)
 {
-    __int128_t res = 0;
     size_t i = 0;
-    bool sign = false;
+    __int128_t result = 0;
+    bool flag = false;
 
-    if (in[i] == '-'){
-        ++i;
-        sign = true;
-    }
-
-    if (in[i] == '+'){
+    if (sInt[i] == '-'){
+        flag = true;
         ++i;
     }
 
-    for (; i < in.size(); ++i){
-        const char c = in[i];
-        if (not std::isdigit(c)) 
-            throw std::runtime_error(std::string("Non-numeric character: ") + c);
-        res *= 10;
-        res += c - '0';
+    if (sInt[i] == '+'){
+        ++i;
     }
-    if (sign){
-        res *= -1;
+
+    for (; i < sInt.size(); ++i){
+        const char c = sInt[i];
+        result *= 10;
+        result += c - '0';
     }
-    return res;
+    if (flag){
+        result *= -1;
+    }
+    return result;
 }
 
 
@@ -87,50 +85,41 @@ vector<__int128_t> initVector(string filePath){
     return vec;
 }
 
-
-// A function to do counting sort of arr[] according to
-// the digit represented by exp.
-void countSort(vector<__int128_t> &arr, __int128_t exp ,int r)
+// counting sort using subroutine for radix sort
+void countsort(vector<__int128_t> &arr, __int128_t eval ,int r)
 {
-	vector<__int128_t> output(arr.size()); // output array
     vector<int> count(r, 0);
-	// Store count of occurrences in count[]
-	for (int i = 0; i < arr.size(); i++)
-		count[(arr[i] / exp) % r]++;
+    vector<__int128_t> result(arr.size()); 
 
-	// Change count[i] so that count[i] now contains actual
-	// position of this digit in output[]
-	for (int i = 1; i < r; i++)
-		count[i] += count[i - 1];
-
-	// Build the output array
+	for (int i = 0; i < arr.size(); i++){
+        count[(arr[i]/eval)%r]+=1;
+    }
+	for (int i = 1; i < r; i++){
+        count[i]+=count[i-1];
+    }
 	for (int i = arr.size() - 1; i >= 0; i--) {
-		output[count[(arr[i] / exp) % r] - 1] = arr[i];
-		count[(arr[i] / exp) % r]--;
+		result[count[(arr[i]/eval)%r]-1]=arr[i];
+		count[(arr[i]/eval)%r]-=1;
 	}
-
-	// Copy the output array to arr[], so that arr[] now
-	// contains sorted numbers according to current digit
-	for (int i = 0; i < output.size(); i++)
-		arr[i] = output[i];
+	for (int i = 0; i < result.size(); i++){
+        arr[i]=result[i];
+    }
 }
 
-// The main function to that sorts arr[] of size n using
-// Radix Sort
+// radixsort using counting sort as subroutine and basic r = 10, but you can change it
 void radixsort(vector<__int128_t> &arr, int r = 10)
 {
     __int128_t key = 1 << r;
-	__int128_t max =arr[0];
+	__int128_t maxval =arr[0];
 
-	for (int i = 1; i < arr.size(); i++)
-		if (arr[i] > max)
-			max = arr[i];
-
-	// Do counting sort for every digit. Note that instead
-	// of passing digit number, exp is passed. exp is 10^i
-	// where i is current digit number
-	for (__int128_t exp = 1; max / exp > 0; exp <<= r)//exp =r???
-		countSort(arr, exp, key);
+	for (int i = 1; i < arr.size(); i++){
+		if (arr[i]>maxval)
+			maxval=arr[i];
+    }
+    //using key value for R by bit calculation
+	for (__int128_t eval = 1; maxval / eval > 0; eval <<= r){
+		countsort(arr, eval, key);
+    }
 }
 
 void Rvalue(vector<__int128_t>& arr, vector<int>& r){
@@ -215,7 +204,7 @@ int main()
     Rvalue(q5,rvalues);
     
     //print sorted vector
-    //printVector(q5);
+    //printVector(q3);
 
 
 	return 0;

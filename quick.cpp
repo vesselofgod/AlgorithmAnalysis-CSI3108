@@ -17,44 +17,28 @@ void printint128(__int128_t x) {
     putchar(x % 10 + '0');
 }
 
-__int128_t strtoint128(std::string const & in)
+__int128_t strtoint128(string & sInt)
 {
-    __int128_t res = 0;
     size_t i = 0;
-    bool sign = false;
+    __int128_t result = 0;
+    bool flag = false;
 
-    if (in[i] == '-'){
-        ++i;
-        sign = true;
-    }
-
-    if (in[i] == '+'){
+    if (sInt[i] == '-'){
+        flag = true;
         ++i;
     }
 
-    for (; i < in.size(); ++i){
-        const char c = in[i];
-        if (not std::isdigit(c)) 
-            throw std::runtime_error(std::string("Non-numeric character: ") + c);
-        res *= 10;
-        res += c - '0';
+    if (sInt[i] == '+'){
+        ++i;
     }
-    if (sign){
-        res *= -1;
-    }
-    return res;
-}
 
-
-string int128tostr(__int128_t x){
-    string result = "";
-    if (x < 0) {
-        result = "-"+result;
+    for (; i < sInt.size(); ++i){
+        const char c = sInt[i];
+        result *= 10;
+        result += c - '0';
     }
-    if (x > 9){
-        int s = x % 10;
-        result = result+to_string(s);
-        printint128(x / 10);
+    if (flag){
+        result *= -1;
     }
     return result;
 }
@@ -87,26 +71,27 @@ vector<__int128_t> initVector(string filePath){
 }
 
 
-int partition(vector<__int128_t> &arr, int start, int end)
+void quicksort(vector<__int128_t> &arr, int s, int e)
 {
-    __int128_t pivot = arr[start];
+    if (s >= e) return; //base case in quick
+
+    __int128_t pivot = arr[s];
  
     int count = 0;
-    for (int i = start + 1; i <= end; i++) {
+
+    for (int i = s + 1; i <= e; i++) {
         if (arr[i] <= pivot)
             count++;
             cmpcnt++;
     }
  
-    // Giving pivot element its correct position
-    int pivotIndex = start + count;
-    swap(arr[pivotIndex], arr[start]);
+    int pivotidx = s + count;
+    swap(arr[pivotidx], arr[s]);
  
-    // Sorting left and right parts of the pivot element
-    int i = start, j = end;
+    int i = s, j = e;
  
-    while (i < pivotIndex && j > pivotIndex) {
-        while (arr[i] <= pivot) {
+    while (i < pivotidx && j > pivotidx) {
+        while (arr[i] <= pivot){
             i++;
             cmpcnt++;
         }
@@ -114,27 +99,13 @@ int partition(vector<__int128_t> &arr, int start, int end)
             j--;
             cmpcnt++;
         }
-        if (i < pivotIndex && j > pivotIndex) {
+        if (i < pivotidx && j > pivotidx) {
             swap(arr[i++], arr[j--]);
         }
     }
-    return pivotIndex;
-}
  
-void quicksort(vector<__int128_t> &arr, int start, int end)
-{
- 
-    // base case
-    if (start >= end) return;
- 
-    // partitioning the array
-    int p = partition(arr, start, end);
- 
-    // Sorting the left part
-    quicksort(arr, start, p - 1);
- 
-    // Sorting the right part
-    quicksort(arr, p + 1, end);
+    quicksort(arr, s, pivotidx - 1);
+    quicksort(arr, pivotidx + 1, e);
 }
 
 int main()

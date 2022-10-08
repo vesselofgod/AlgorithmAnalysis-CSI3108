@@ -17,32 +17,30 @@ void printint128(__int128_t x) {
     putchar(x % 10 + '0');
 }
 
-__int128_t strtoint128(std::string const & in)
+__int128_t strtoint128(string & sInt)
 {
-    __int128_t res = 0;
     size_t i = 0;
-    bool sign = false;
+    __int128_t result = 0;
+    bool flag = false;
 
-    if (in[i] == '-'){
-        ++i;
-        sign = true;
-    }
-
-    if (in[i] == '+'){
+    if (sInt[i] == '-'){
+        flag = true;
         ++i;
     }
 
-    for (; i < in.size(); ++i){
-        const char c = in[i];
-        if (not std::isdigit(c)) 
-            throw std::runtime_error(std::string("Non-numeric character: ") + c);
-        res *= 10;
-        res += c - '0';
+    if (sInt[i] == '+'){
+        ++i;
     }
-    if (sign){
-        res *= -1;
+
+    for (; i < sInt.size(); ++i){
+        const char c = sInt[i];
+        result *= 10;
+        result += c - '0';
     }
-    return res;
+    if (flag){
+        result *= -1;
+    }
+    return result;
 }
 
 
@@ -90,24 +88,36 @@ vector<__int128_t> initVector(string filePath){
 
 void countSort(vector<__int128_t>& arr)
 {
-    __int128_t max = *max_element(arr.begin(), arr.end());
-    __int128_t min = *min_element(arr.begin(), arr.end());
-    __int128_t range = max - min + 1;
-  
-    vector<int> count(range), output(arr.size());
-    for (int i = 0; i < arr.size(); i++)
-        count[arr[i] - min]++;
-  
-    for (int i = 1; i < count.size(); i++)
-        count[i] += count[i - 1];
-  
+    __int128_t maxval = arr[0];
+    __int128_t minval = arr[0];
+
+    for (int i = 1; i < arr.size(); i++){
+		if (arr[i]>maxval)
+			maxval=arr[i];
+    }
+    for (int i = 1; i < arr.size(); i++){
+		if (arr[i]<minval)
+			minval=arr[i];
+    }
+
+    __int128_t space = maxval - minval + 1;
+    vector<int> count(space);
+    vector<__int128_t> result(arr.size());
+
+    for (int i = 0; i < arr.size(); i++){
+        count[arr[i]-minval]+=1;
+    }
+    for (int i = 1; i < count.size(); i++){
+        count[i]+=count[i-1];
+    }
     for (int i = arr.size() - 1; i >= 0; i--) {
-        output[count[arr[i] - min] - 1] = arr[i];
-        count[arr[i] - min]--;
+        result[count[arr[i]-minval]-1]=arr[i];
+        count[arr[i]-minval]-=1;
     }
   
-    for (int i = 0; i < arr.size(); i++)
-        arr[i] = output[i];
+    for (int i = 0; i < arr.size(); i++){
+        arr[i]=result[i];
+    }
 }
 
 
